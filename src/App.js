@@ -1,24 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import './css/App.css';
+import Board from './components/Board';
+import Gameover from './components/YouWin';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import Home from './components/Home';
 
 function App() {
+  const [gameOver, setGameOver] = useState(false);
+  const { cards } = useSelector(state => state.board);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className='app-container'>
+        <Home />
+      </div>
   );
 }
 

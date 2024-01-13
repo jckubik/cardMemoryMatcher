@@ -1,0 +1,15 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+}
+
+.board-size-container {
+  height: 5em;
+}
+
+.button-container {
+  display: flex;
+  gap: 1em;
+}
