@@ -1,10 +1,11 @@
 import "../css/Home.css";
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { populateBoardCards } from '../slices/boardSlice';
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
   const boardSizeCounts = {
     "small": 12,
@@ -12,9 +13,14 @@ const Home = () => {
     "large": 36,
   };
 
+  useEffect(() => {
+    localStorage.setItem("currentCards", "[]");
+  }, []);
+
   function handleSizeSelection(size) {
-    dispatch(populateBoardCards({ size: boardSizeCounts[size] }));
-    navigate("/board");
+    // dispatch(populateBoardCards({ size: boardSizeCounts[size] }));
+    const navData = { boardSize: boardSizeCounts[size] }
+    navigate("/board", { state: navData });
   }
 
   return (

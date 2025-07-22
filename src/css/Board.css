@@ -3,6 +3,6 @@
   grid-template-columns: repeat(auto-fill, 6em);
   grid-auto-rows: 6em;
   gap: .2em;
-  width: 80vw;
-  margin: auto;
+  width: 40vw;
+  margin: 5em auto;
 }

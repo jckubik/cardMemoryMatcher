@@ -1,72 +1,50 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { flipCards, addChoiceToPair, clearChoices, matchPairOfCards } from '../slices/boardSlice';
+import { flipCards, addChoiceToPair, checkForMatch } from '../slices/boardSlice';
 import Card from './Card';
 import YouWin from './YouWin';
 import '../css/Board.css';
 import { useEffect, useState } from 'react';
+import { populateBoardCards } from '../slices/boardSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Board = () => {
-
-  const { cards, choicePair } = useSelector(state => state.board);
+  const { cards, choicePair, isGameOver, triesCount } = useSelector(state => state.board);
   const [paused, setPaused] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
   useEffect(() => {
-    console.log("choice pair updated", choicePair);
+    dispatch(populateBoardCards({ size: state.boardSize }));
+  }, []);
+
+  useEffect(() => {
     if (choicePair.length === 2) {
       setPaused(true);
       setTimeout(() => {
         setPaused(false);
-        checkForMatch(choicePair[0], choicePair[1]);
+        dispatch(checkForMatch({ firstChoice: choicePair[0], secondChoice: choicePair[1] }));
       }, 750);
     }
   }, [choicePair]);
-
-  useEffect(() => {
-    checkIfGameOver();
-  }, [cards]);
-
-  function checkIfGameOver() {
-    let matchedBools = cards.map(card => card.matched);
-    console.log(matchedBools);
-    if (matchedBools.every((bool) => bool)) {
-      setGameOver(true);
-    }
-  }
-  
-  function flipCardsAtIndex(cardIndexes) {
-    dispatch(flipCards({ indexes: cardIndexes }));
-  }
-  
-  function clearBoard(indexes) {
-    flipCardsAtIndex(indexes);
-    dispatch(clearChoices());
-  }
-
-  
-  function checkForMatch(firstChoice, secondChoice) {
-    if (cards[firstChoice].value === cards[secondChoice].value) {
-      dispatch(matchPairOfCards({ indexes: [firstChoice, secondChoice] }));
-      console.log(`${cards[firstChoice].value} pair matched!`);
-    }
-    clearBoard([firstChoice, secondChoice]);
-    console.log("firstChoice", firstChoice, "secondChoice", secondChoice);
-  }
   
   const handleFlip = (flipped, matched, currentChoiceIndex) => {
     if (!paused && !flipped && !matched) {
       dispatch(addChoiceToPair({ choice: currentChoiceIndex }));
-      flipCardsAtIndex([currentChoiceIndex]);
-      console.log("currentChoiceIndex", currentChoiceIndex);
+      dispatch(flipCards({ indexes: [currentChoiceIndex] }));
     }
+  }
+
+  function handleQuit() {
+    navigate("/");
   }
 
 
   return (
     <div className='board-container'>
+      {console.log("cards", cards)}
       {
-        gameOver ? 
+        isGameOver ? 
         <YouWin /> :
         cards.map(({ value, flipped, matched }, index) => {
           return (
@@ -76,10 +54,13 @@ const Board = () => {
               matched={matched}
               index={index}
               handleFlip={handleFlip}
+              key={index + Math.random()}
             />
           );
         })
       }
+      <p>Tries: { triesCount }</p>
+      <button onClick={handleQuit} >{ isGameOver ? "Go Home" : "Quit" }</button>
     </div>
   );
 };
